@@ -31,7 +31,7 @@ export default function Category() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <aside className="hidden md:block">
-          <div className="bg-white p-4 rounded shadow">
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
             <h4 className="font-semibold mb-3">Filters</h4>
             <div className="space-y-2 text-sm">
               <label className="flex items-center gap-2"><input type="checkbox" /> Open now</label>

@@ -18,7 +18,7 @@ export default function CartPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               {cartItems.map(item => (
-                <div key={item.id} className="flex items-center gap-4 bg-white p-3 rounded mb-2">
+                <div key={item.id} className="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-lg mb-3">
                   <div className="flex-1">
                     <div className="font-semibold">{item.title}</div>
                     <div className="text-sm text-gray-500">₹{item.price}</div>
@@ -34,7 +34,7 @@ export default function CartPage() {
               <button onClick={clearCart} className="mt-2 text-sm text-red-600">Clear Cart</button>
             </div>
 
-            <aside className="bg-white p-4 rounded">
+            <aside className="bg-white rounded-2xl p-6 shadow-lg">
               <h3 className="font-semibold mb-2">Price Details</h3>
               <div className="flex justify-between"> <span>Subtotal</span> <span>₹{subtotal}</span></div>
               <div className="flex justify-between"> <span>Delivery Fee</span> <span>₹{delivery}</span></div>

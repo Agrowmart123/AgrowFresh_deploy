@@ -4,7 +4,6 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { createOrder } from '../services/api'
-import { useNavigate } from 'react-router-dom'
 
 export default function Checkout(){
   const { cartItems, clearCart } = useCart()
@@ -61,21 +60,21 @@ export default function Checkout(){
     <div>
       <main className="max-w-3xl mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Checkout</h1>
-        <div className="bg-white p-4 rounded">
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <h3 className="font-semibold">Address</h3>
-          <form onSubmit={onPlace} className="space-y-2 mt-2">
-            <input value={name} onChange={e=>setName(e.target.value)} className="w-full border p-2 rounded" placeholder="Full name" />
-            <input value={address} onChange={e=>setAddress(e.target.value)} className="w-full border p-2 rounded" placeholder="Address line" />
-            <div className="flex gap-2">
-              <input value={city} onChange={e=>setCity(e.target.value)} className="flex-1 border p-2 rounded" placeholder="City" />
-              <input value={pin} onChange={e=>setPin(e.target.value)} className="w-28 border p-2 rounded" placeholder="PIN" />
+          <form onSubmit={onPlace} className="space-y-4 mt-3">
+            <input value={name} onChange={e=>setName(e.target.value)} className="w-full border p-3 rounded-xl" placeholder="Full name" />
+            <input value={address} onChange={e=>setAddress(e.target.value)} className="w-full border p-3 rounded-xl" placeholder="Address line" />
+            <div className="flex gap-3">
+              <input value={city} onChange={e=>setCity(e.target.value)} className="flex-1 border p-3 rounded-xl" placeholder="City" />
+              <input value={pin} onChange={e=>setPin(e.target.value)} className="w-28 border p-3 rounded-xl" placeholder="PIN" />
             </div>
-            <h3 className="font-semibold mt-4">Payment</h3>
+            <h3 className="font-semibold mt-2">Payment</h3>
             <div className="space-y-2">
               <label className="flex items-center gap-2"><input type="radio" name="pay" value="cod" checked={payment==='cod'} onChange={e=>setPayment(e.target.value)}/> Cash on Delivery</label>
               <label className="flex items-center gap-2"><input type="radio" name="pay" value="online" checked={payment==='online'} onChange={e=>setPayment(e.target.value)} /> UPI / Card</label>
             </div>
-            <button disabled={loading} className="mt-4 btn-primary px-4 py-2 rounded">{loading ? 'Placing...' : 'Place Order'}</button>
+            <button disabled={loading} className="mt-4 grad-primary px-4 py-2 rounded-full text-white shadow">{loading ? 'Placing...' : 'Place Order'}</button>
           </form>
         </div>
       </main>

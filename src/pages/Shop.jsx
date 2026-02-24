@@ -28,26 +28,26 @@ export default function Shop() {
   return (
     <div>
       <main className="max-w-6xl mx-auto p-4">
-        <div className="rounded-lg mb-4 overflow-hidden shadow">
+        <div className="rounded-2xl mb-4 overflow-hidden shadow-lg">
           <img src={shop.banner} alt="shop banner" className="w-full h-56 object-cover" />
         </div>
 
         <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
           <div className="md:col-span-2">
             <div className="flex items-start gap-4">
-              <img src={shop.image} alt={shop.name} className="w-28 h-28 rounded object-cover border" />
+              <img src={shop.image} alt={shop.name} className="w-28 h-28 rounded-2xl object-cover border" />
               <div>
                 <h1 className="text-2xl font-bold">{shop.name}</h1>
                 <div className="text-sm text-gray-600">{shop.locality}</div>
                 <div className="mt-2 text-sm text-gray-700">{shop.open ? 'Open now' : 'Closed'} • Min order ₹{shop.minOrder} • {shop.rating} ★</div>
                 <div className="mt-3 flex gap-3">
-                  <button className="px-3 py-2 bg-pink-600 text-white rounded">View Menu</button>
-                  <button className="px-3 py-2 bg-white border rounded">Call Shop</button>
-                  <button className="px-3 py-2 bg-white border rounded">Directions</button>
+                  <button className="px-3 py-2 grad-primary text-white rounded-full shadow">View Menu</button>
+                  <button className="px-3 py-2 bg-white border rounded-xl">Call Shop</button>
+                  <button className="px-3 py-2 bg-white border rounded-xl">Directions</button>
                 </div>
                 <div className="mt-3 text-sm text-gray-600">{shop.address}</div>
                 <div className="mt-3 flex gap-2">
-                  {shop.highlights.map(h => <span key={h} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">{h}</span>)}
+                  {shop.highlights.map(h => <span key={h} className="bg-gray-50 text-gray-700 px-3 py-1 rounded-full text-xs shadow-sm">{h}</span>)}
                 </div>
               </div>
             </div>
@@ -60,7 +60,7 @@ export default function Shop() {
             </div>
           </div>
 
-          <aside className="bg-white p-4 rounded shadow">
+          <aside className="bg-white rounded-2xl p-4 shadow-lg">
             <h4 className="font-semibold">Shop Info</h4>
             <div className="text-sm text-gray-600 mt-2">Rating <strong className="text-gray-800">{shop.rating}</strong></div>
             <div className="text-sm text-gray-600">Delivery time <strong className="text-gray-800">{shop.deliveryTime}</strong></div>
@@ -76,11 +76,11 @@ export default function Shop() {
       <ConflictModal />
 
       {/* sticky cart bar */}
-      {cartItems.length > 0 && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow rounded px-4 py-2 flex items-center gap-4 z-30">
-          <div>{cartItems.length} items</div>
+        {cartItems.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-2xl px-5 py-3 flex items-center gap-4 z-30">
+          <div className="text-sm text-gray-600">{cartItems.length} items</div>
           <div className="font-bold">₹{cartItems.reduce((s,i)=>s+i.price*i.quantity,0)}</div>
-          <a href="/cart" className="px-3 py-1 bg-blue-600 text-white rounded">View Cart</a>
+          <a href="/cart" className="px-4 py-2 grad-primary text-white rounded-full shadow">View Cart</a>
         </div>
       )}
     </div>

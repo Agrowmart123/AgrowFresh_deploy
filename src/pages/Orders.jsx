@@ -12,7 +12,7 @@ export default function Orders(){
         ) : (
           <div className="space-y-4">
             {orders.map(o => (
-              <div key={o.id} className="bg-white p-4 rounded shadow">
+              <div key={o.id} className="bg-white rounded-2xl p-4 shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-semibold">Order {o.id}</div>

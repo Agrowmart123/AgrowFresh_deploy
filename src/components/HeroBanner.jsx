@@ -1,32 +1,35 @@
 import React from 'react'
 import { IMAGES } from '../data/images'
-import Carousel from './Carousel'
+import { motion } from 'framer-motion'
 
-export default function HeroBanner() {
+export default function HeroBanner(){
   return (
-    <section className="relative overflow-hidden rounded-lg text-black p-6 md:p-12 mb-8">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-6">
-        <div className="flex-1">
-          <h1 className="text-3xl md:text-4xl font-bold">Groceries from your local kirana</h1>
-          <p className="text-gray-700 mt-2">Fast delivery from trusted neighbourhood shops — support local businesses.</p>
+    <section className="relative overflow-hidden rounded-2xl text-white py-12 md:py-20 mb-10">
+      {/* decorative gradients */}
+      <div className="absolute -left-20 -top-20 w-72 h-72 bg-gradient-to-tr from-purple-600 to-pink-400 rounded-full filter blur-3xl opacity-30"></div>
+      <div className="absolute right-[-80px] top-12 w-56 h-56 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full filter blur-2xl opacity-30"></div>
 
-          <div className="mt-6 flex gap-3">
-            <input className="w-full md:w-96 rounded p-3" placeholder="Search for products or shops" />
-            <button className="btn-primary px-4 py-3 rounded font-semibold">Search</button>
-          </div>
+      <div className="relative max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div>
+          <motion.h1 initial={{opacity:0, y:12}} animate={{opacity:1, y:0}} transition={{duration:0.6}} className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Groceries from your local kirana, faster than ever</motion.h1>
+          <motion.p initial={{opacity:0, y:8}} animate={{opacity:1, y:0}} transition={{delay:0.12,duration:0.6}} className="text-base md:text-lg text-white/90 mt-4 max-w-xl">Support neighbourhood shops and get fresh produce delivered to your doorstep with real-time tracking and trusted quality.</motion.p>
 
-          <div className="mt-6 flex gap-3 text-sm">
-            <span className="bg-green-50 text-green-800 px-3 py-1 rounded">Free delivery over ₹499</span>
-            <span className="bg-yellow-50 text-yellow-800 px-3 py-1 rounded">Live tracking</span>
-            <span className="bg-purple-50 text-purple-800 px-3 py-1 rounded">Support local</span>
-          </div>
+          <motion.div initial={{opacity:0, y:8}} animate={{opacity:1, y:0}} transition={{delay:0.2}} className="mt-6 flex flex-col sm:flex-row gap-3">
+            <button className="inline-flex items-center justify-center grad-primary px-6 py-3 rounded-full text-white shadow-lg hover:scale-105 transition-transform">Get Started</button>
+            <button className="inline-flex items-center justify-center border-2 border-white/20 text-white px-5 py-3 rounded-full hover:bg-white/10 transition">Explore Shops</button>
+          </motion.div>
+
+          <motion.div initial={{opacity:0, y:8}} animate={{opacity:1, y:0}} transition={{delay:0.28}} className="mt-6 flex gap-3 text-sm">
+            <span className="bg-white/10 text-white px-3 py-1 rounded">Free delivery over ₹499</span>
+            <span className="bg-white/10 text-white px-3 py-1 rounded">Live tracking</span>
+            <span className="bg-white/10 text-white px-3 py-1 rounded">Support local</span>
+          </motion.div>
         </div>
 
-        <div className="w-full md:w-1/3">
-          <img src={IMAGES.shop3} alt="hero shop" className="w-full h-44 object-cover rounded shadow" />
+        <div className="flex items-center justify-center">
+          <motion.img src={IMAGES.shop3} alt="hero" initial={{scale:0.98, y:6}} animate={{scale:1, y:0}} transition={{duration:0.8}} className="w-full max-w-md rounded-2xl shadow-2xl object-cover" />
         </div>
       </div>
-
     </section>
   )
 }

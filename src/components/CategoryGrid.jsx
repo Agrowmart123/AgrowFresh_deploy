@@ -15,9 +15,11 @@ export default function CategoryGrid(){
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
       {categories.map(c => (
-        <div key={c.id} className="bg-white rounded-lg p-3 text-center hover:shadow-md cursor-pointer">
-          <img src={c.img} alt={c.title} className="w-16 h-16 mx-auto rounded-full object-cover" />
-          <div className="mt-2 font-semibold text-sm">{c.title}</div>
+        <div key={c.id} className="bg-white rounded-2xl p-4 text-center hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+          <div className="w-16 h-16 mx-auto rounded-full overflow-hidden bg-gray-50 flex items-center justify-center">
+            <img src={c.img} alt={c.title} className="w-14 h-14 object-cover" />
+          </div>
+          <div className="mt-3 font-semibold text-sm text-gray-800">{c.title}</div>
         </div>
       ))}
     </div>

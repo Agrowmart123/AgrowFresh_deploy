@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { motion } from 'framer-motion'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -34,10 +35,10 @@ export default function ProductCard({ product }) {
   const discount = product.mrp ? Math.round((1 - (product.price || 0) / product.mrp) * 100) : 0
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-0.5 p-3">
-      <div className="relative w-full h-44 rounded-lg overflow-hidden bg-white cursor-pointer" onClick={() => setOpen(true)}>
+    <motion.div whileHover={{ y: -6 }} transition={{ duration: 0.35 }} className="bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl p-4 group">
+      <div className="relative w-full h-44 rounded-xl overflow-hidden bg-white cursor-pointer" onClick={() => setOpen(true)}>
         {!imgLoaded && <Skeleton className="h-44 w-full" />}
-        <img src={imgSrc} alt={product.name} onLoad={() => setImgLoaded(true)} className={`w-full h-44 object-contain p-4 bg-white ${imgLoaded ? '' : 'hidden'}`} />
+        <motion.img src={imgSrc} alt={product.name} onLoad={() => setImgLoaded(true)} initial={{ opacity: 0, scale: 0.98 }} animate={imgLoaded ? { opacity: 1, scale: 1 } : {}} className={`w-full h-44 object-contain p-4 bg-white group-hover:scale-105 transition-transform duration-500 ${imgLoaded ? '' : 'hidden'}`} />
 
         {discount > 0 && (
           <div className="absolute top-3 left-3 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow">{discount}% OFF</div>
@@ -46,9 +47,9 @@ export default function ProductCard({ product }) {
 
       <div className="mt-3">
         <h4 className="font-semibold text-sm leading-snug line-clamp-2">{product.name}</h4>
-        <div className="mt-2 flex items-end justify-between gap-3">
+        <div className="mt-3 flex items-center justify-between gap-3">
           <div>
-            <div className="text-pink-600 font-bold text-lg">₹{product.price}</div>
+            <div className="text-purple-600 font-bold text-lg">₹{product.price}</div>
             {product.mrp && <div className="text-xs text-gray-400 line-through">₹{product.mrp}</div>}
           </div>
 
@@ -58,12 +59,12 @@ export default function ProductCard({ product }) {
                 {product.sizes ? product.sizes.map(s => <option key={s} value={s}>{s}</option>) : <option value={qty}>{qty}</option>}
               </select>
             </div>
-            <button onClick={() => onAdd(product)} className="w-24 text-sm px-3 py-1 rounded-full border-2 border-pink-500 text-pink-600 font-semibold hover:bg-pink-50">ADD</button>
+            <button onClick={() => onAdd(product)} className="w-24 text-sm px-3 py-1 rounded-full grad-primary text-white font-semibold hover:shadow-xl active:scale-95 transition-transform">ADD</button>
           </div>
         </div>
       </div>
 
       <ProductModal open={open} product={product} onClose={() => setOpen(false)} onAdd={onAdd} />
-    </div>
+    </motion.div>
   )
 }

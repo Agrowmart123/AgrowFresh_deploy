@@ -21,10 +21,10 @@ export default function Login(){
     <div>
       <main className="max-w-md mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Login</h1>
-        <form onSubmit={onSubmit} className="bg-white p-4 rounded space-y-2">
-          <input value={email} onChange={e=>setEmail(e.target.value)} className="w-full border p-2 rounded" placeholder="Email" />
-          <input value={password} onChange={e=>setPassword(e.target.value)} className="w-full border p-2 rounded" placeholder="Password" type="password" />
-          <button className="w-full bg-blue-600 text-white py-2 rounded">Login</button>
+        <form onSubmit={onSubmit} className="bg-white rounded-2xl p-6 space-y-4 shadow-lg">
+          <input value={email} onChange={e=>setEmail(e.target.value)} className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="Email" />
+          <input value={password} onChange={e=>setPassword(e.target.value)} className="w-full border p-3 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="Password" type="password" />
+          <button className="w-full grad-primary py-3 rounded-full text-white shadow-lg hover:scale-105 transition">Login</button>
         </form>
       </main>
     </div>

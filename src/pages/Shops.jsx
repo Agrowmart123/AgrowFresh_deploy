@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import { IMAGES } from '../data/images'
 import ShopHighlightCard from '../components/ShopHighlightCard'
 import ShopCard from '../components/ShopCard'
@@ -11,6 +12,11 @@ const sampleShops = [
 ]
 
 export default function Shops(){
+  const list = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.08 } }
+  }
+  const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } }
   return (
     <main className="max-w-6xl mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -39,15 +45,21 @@ export default function Shops(){
         <section className="md:col-span-3">
           <h2 className="text-xl font-semibold mb-4">Browse Shops Near You</h2>
 
-          <div className="flex gap-4 overflow-x-auto pb-2 mb-6">
+          <motion.div className="flex gap-4 overflow-x-auto pb-2 mb-6 no-scrollbar" initial="hidden" animate="show" variants={list}>
             {sampleShops.slice(0,3).map(s => (
-              <ShopHighlightCard key={s.id} shop={s} />
+              <motion.div key={s.id} variants={item} className="flex-shrink-0">
+                <ShopHighlightCard shop={s} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {sampleShops.map(s => <ShopCard key={s.id} shop={s} />)}
-          </div>
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-4" initial="hidden" whileInView="show" viewport={{ once: true }} variants={list}>
+            {sampleShops.map(s => (
+              <motion.div key={s.id} variants={item}>
+                <ShopCard shop={s} />
+              </motion.div>
+            ))}
+          </motion.div>
         </section>
       </div>
     </main>
