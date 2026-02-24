@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Basic base styles to ensure CSS is visible while Tailwind utilities load */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: Poppins, Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background-color: #f8fafc; /* tailwind slate-50 */
+  color: #0f172a; /* slate-900 */
+  line-height: 1.45;
+}
+
+/* Typography tuning */
+h1{font-size:1.9rem}
+h2{font-size:1.35rem}
+h3{font-size:1.15rem}
+
+@media(min-width:768px){
+  h1{font-size:2.6rem}
+  h2{font-size:1.5rem}
+}
+
+/* Theme color variables */
+:root{
+  --color-green: #00A86B;
+  --color-yellow: #F59E0B;
+  --color-orange: #FB923C;
+  --color-purple: #7C3AED;
+  --color-white: #ffffff;
+}
+
+/* Utility helpers using theme */
+.brand-gradient{background:linear-gradient(90deg,var(--color-green),var(--color-yellow));}
+.brand-accent{color:var(--color-green)}
+.btn-primary{background:var(--color-green);color:var(--color-white)}
+.btn-accent{background:var(--color-orange);color:var(--color-white)}
+
+/* Design tokens */
+:root{
+  --card-radius: 12px;
+  --card-shadow: 0 6px 18px rgba(15,23,42,0.08);
+  --card-shadow-md: 0 10px 30px rgba(15,23,42,0.12);
+  --transition-base: 250ms;
+}
+
+/* Card utility using tokens */
+.card{border-radius:var(--card-radius);box-shadow:var(--card-shadow);transition:transform var(--transition-base), box-shadow var(--transition-base)}
+.card:hover{transform:translateY(-4px);box-shadow:var(--card-shadow-md)}
+
+/* Buttons */
+.btn-primary{transition:transform var(--transition-base), background-color var(--transition-base)}
+.btn-primary:hover{transform:translateY(-2px);filter:brightness(0.98)}
+
+/* Subtle animations */
+.fade-in{animation:fadeIn 320ms ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Hide scrollbar for horizontal scrollers used in highlight lists */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
