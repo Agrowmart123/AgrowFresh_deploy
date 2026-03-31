@@ -1,24 +1,26 @@
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import AppRoutes from './routes/Routes'
-import './index.css'
-import { CartProvider } from './context/CartContext'
-import { AuthProvider } from './context/AuthContext'
-import { ToastProvider } from './context/ToastContext'
-import { LocationProvider } from './context/LocationContext'
-import Toast from './components/Toast'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
 
-createRoot(document.getElementById('root')).render(
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import { WishlistProvider } from "./context/WishlistContext";
+import { LocationProvider } from "./context/LocationContext";
+import { ToastProvider } from "./context/ToastContext";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
-      <CartProvider>
-        <ToastProvider>
-          <LocationProvider>
-            <AppRoutes />
-            <Toast />
-          </LocationProvider>
-        </ToastProvider>
-      </CartProvider>
+      <LocationProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </LocationProvider>
     </AuthProvider>
-  </React.StrictMode>
-)
+  </React.StrictMode>,
+);

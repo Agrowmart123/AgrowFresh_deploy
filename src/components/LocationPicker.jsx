@@ -1,51 +1,94 @@
-import React, { useState } from 'react'
-import { useLocation } from '../context/LocationContext'
+import React, { useState } from "react";
+import { useLocation } from "../context/LocationContext";
 
-const SAMPLE = [
-  { name: 'Bengaluru, KA', pin: '560001' },
-  { name: 'Mumbai, MH', pin: '400001' },
-  { name: 'Delhi, DL', pin: '110001' },
-  { name: 'Kolkata, WB', pin: '700001' }
-]
+export default function LocationPicker({ open, onClose, className }) {
+  const { location, setLocation } = useLocation();
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-export default function LocationPicker({ open, onClose }){
-  const { location, setLocation } = useLocation()
-  const [pin, setPin] = useState(location?.pin || '')
-  const [name, setName] = useState(location?.name || '')
+  if (!open) return null;
 
-  if (!open) return null
+  async function handleSearch(value) {
+    const cleanValue = value.replace(/\D/g, "");
+    setSearch(value);
 
-  function choose(loc){
-    setLocation(loc)
-    onClose()
+    if (!cleanValue) {
+      setResults([]);
+      return;
+    }
+
+    // PIN search
+    if (cleanValue.length === 6) {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `https://api.postalpincode.in/pincode/${cleanValue}`,
+        );
+        const data = await res.json();
+
+        if (data[0].Status === "Success") {
+          const offices = data[0].PostOffice.map((p) => ({
+            name: `${p.Name}, ${p.District}`,
+            pin: p.Pincode,
+          }));
+          setResults(offices);
+        } else {
+          setResults([]);
+        }
+      } catch (err) {
+        console.log(err);
+        setResults([]);
+      }
+      setLoading(false);
+      return;
+    }
+
+    setResults(filtered);
   }
 
-  function save(){
-    if (!name && !pin) return
-    setLocation({ name: name || `PIN ${pin}`, pin })
-    onClose()
+  function choose(loc) {
+    setLocation(loc);
+    onClose();
   }
+
+  // Default: floating dropdown (desktop). With className prop: inline (mobile drawer).
+  const containerClass = className
+    ? `bg-white rounded-xl border border-gray-100 p-4 ${className}`
+    : "absolute top-12 left-0 w-80 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-50";
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg">
-        <div className="h-1 w-full bg-gradient-to-r from-purple-600 to-orange-500 rounded-t-md -mt-6 mb-4"></div>
-        <h3 className="text-lg font-semibold">Select your location</h3>
-        <div className="mt-3 space-y-2">
-          {SAMPLE.map(s => (
-            <button key={s.pin} onClick={() => choose(s)} className="w-full text-left p-3 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-100">{s.name} • {s.pin}</button>
-          ))}
-        </div>
-        <div className="mt-4">
-          <div className="text-sm text-gray-600">Or enter PIN / place</div>
-          <input value={pin} onChange={e=>setPin(e.target.value)} placeholder="PIN code" className="w-full border p-3 rounded-lg mt-2 focus:ring-2 focus:ring-purple-500" />
-          <input value={name} onChange={e=>setName(e.target.value)} placeholder="Place name (optional)" className="w-full border p-3 rounded-lg mt-2 focus:ring-2 focus:ring-purple-500" />
-          <div className="mt-3 flex justify-end gap-2">
-            <button onClick={onClose} className="px-3 py-2 border rounded-lg">Cancel</button>
-            <button onClick={save} className="px-3 py-2 grad-primary text-white rounded-lg">Save</button>
+    <div className={containerClass}>
+      <h3 className="text-sm font-semibold mb-2">Select your location</h3>
+
+      <div className="border-t pt-2">
+        <div className="text-xs text-gray-500 mb-1">Enter Your PIN</div>
+
+        <input
+          value={search}
+          onChange={(e) => handleSearch(e.target.value)}
+          placeholder="Enter Your PIN Code"
+          className="w-full border  p-2 rounded-md mb-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#68911a]"
+        />
+
+        {loading && (
+          <p className="text-xs text-gray-500 mb-2">Searching location...</p>
+        )}
+
+        {results.length > 0 && (
+          <div className="space-y-1 mb-2 max-h-48 overflow-y-auto">
+            {results.map((r, i) => (
+              <button
+                key={i}
+                onClick={() => choose(r)}
+                className="w-full text-left p-2 rounded-lg hover:bg-gray-50 text-sm"
+              >
+                {r.name} • {r.pin}
+              </button>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
-  )
+  );
 }

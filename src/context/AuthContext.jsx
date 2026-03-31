@@ -1,27 +1,41 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
-export function useAuth() {
-  return useContext(AuthContext)
-}
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [token, setToken] = useState(localStorage.getItem('token') || null)
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
 
-  function login(userData, jwt) {
-    setUser(userData)
-    setToken(jwt)
-    localStorage.setItem('token', jwt)
-  }
+      if (storedUser && storedUser !== "undefined") {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Invalid user data in localStorage");
+      localStorage.removeItem("user");
+    }
+  }, []);
 
-  function logout() {
-    setUser(null)
-    setToken(null)
-    localStorage.removeItem('token')
-  }
+  const login = (userData) => {
+    setUser(userData);
 
-  const value = { user, token, login, logout }
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
+
+ const logout = () => {
+  setUser(null);
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+};
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

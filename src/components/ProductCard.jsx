@@ -1,70 +1,163 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { useCart } from '../context/CartContext'
-import { useAuth } from '../context/AuthContext'
-import { useToast } from '../context/ToastContext'
-import { useNavigate } from 'react-router-dom'
-import ProductModal from './ProductModal'
-import Skeleton from './Skeleton'
-import { IMAGES } from '../data/images'
+import React from "react";
+import { ShoppingCart, Star, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { useToast } from "../context/ToastContext";
+import { useAuth } from "../context/AuthContext";
 
-export default function ProductCard({ product }) {
-  const { addToCart } = useCart()
-  const { token } = useAuth()
-  const { showToast } = useToast()
-  const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
-  const [imgLoaded, setImgLoaded] = useState(false)
+export default function ProductCard({ product, onQtyChange }) {
+  const [qty, setQty] = React.useState(0);
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { showToast } = useToast();
+  const { user } = useAuth();
 
-  function onAdd(item) {
-    if (!token) {
-      showToast('Please register or login to add items to cart', 'info')
-      navigate('/signup')
-      return
-    }
-    addToCart({ id: item.id, title: item.name, price: item.price, shopId: item.shopId })
-    showToast('Added to cart', 'success')
-    setOpen(false)
-  }
-
-  const fallbacks = [IMAGES.product1, IMAGES.product2, IMAGES.product3]
-  const fallbacksAll = [IMAGES.product1, IMAGES.product2, IMAGES.product3, IMAGES.product4, IMAGES.product5]
-  const imgSrc = product.image || fallbacksAll[Math.abs((product.id || '').toString().length) % fallbacksAll.length]
-
-  const [qty, setQty] = useState(product.defaultQty || product.unit || '1 Unit')
-  const discount = product.mrp ? Math.round((1 - (product.price || 0) / product.mrp) * 100) : 0
-
+  // ✅ ONLY IMPORTANT FIX
+ const image =
+  product.image ||
+  product.productImage ||
+  (Array.isArray(product.imageUrls)
+    ? product.imageUrls[0]
+    : null) ||
+  "https://via.placeholder.com/300";
   return (
-    <motion.div whileHover={{ y: -6 }} transition={{ duration: 0.35 }} className="bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl p-4 group">
-      <div className="relative w-full h-44 rounded-xl overflow-hidden bg-white cursor-pointer" onClick={() => setOpen(true)}>
-        {!imgLoaded && <Skeleton className="h-44 w-full" />}
-        <motion.img src={imgSrc} alt={product.name} onLoad={() => setImgLoaded(true)} initial={{ opacity: 0, scale: 0.98 }} animate={imgLoaded ? { opacity: 1, scale: 1 } : {}} className={`w-full h-44 object-contain p-4 bg-white group-hover:scale-105 transition-transform duration-500 ${imgLoaded ? '' : 'hidden'}`} />
+    <div
+      onClick={() => navigate(`/product/${product.id}`)}
+      className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+    >
+      {/* Image */}
+      <div className="relative">
+        <img
+          src={image}
+          alt={product.name || product.productName}
+          className="w-full h-40 object-cover"
+        />
 
-        {discount > 0 && (
-          <div className="absolute top-3 left-3 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow">{discount}% OFF</div>
-        )}
+        <div className="absolute top-3 left-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-bold">
+          66%
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (isInWishlist(product.id || product.productId)) {
+              removeFromWishlist(product.id || product.productId);
+              showToast("Removed from wishlist", "info");
+            } else {
+              addToWishlist(product);
+              showToast("Added to wishlist", "success");
+            }
+          }}
+          className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:shadow-lg transition"
+        >
+          <Heart
+            size={18}
+            className={`transition ${
+              isInWishlist(product.id || product.productId)
+                ? "fill-red-500 text-red-500"
+                : "text-gray-400"
+            }`}
+          />
+        </button>
       </div>
 
-      <div className="mt-3">
-        <h4 className="font-semibold text-sm leading-snug line-clamp-2">{product.name}</h4>
-        <div className="mt-3 flex items-center justify-between gap-3">
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-800 text-sm line-clamp-2">
+          {product.name || product.productName}
+        </h3>
+
+        {/* Rating */}
+        <div className="flex items-center gap-1 mt-2 text-yellow-400">
+          <Star size={14} fill="currentColor" />
+          <Star size={14} fill="currentColor" />
+          <Star size={14} fill="currentColor" />
+          <Star size={14} fill="currentColor" />
+          <Star size={14} className="text-gray-300" />
+          <span className="text-gray-500 text-xs ml-1">3</span>
+        </div>
+
+        <p className="text-sm text-[#efad23] mt-1">By NestFood</p>
+
+        {/* Price Row */}
+        <div className="flex items-center justify-between mt-3">
           <div>
-            <div className="text-purple-600 font-bold text-lg">₹{product.price}</div>
-            {product.mrp && <div className="text-xs text-gray-400 line-through">₹{product.mrp}</div>}
+            <span className="font-bold text-lg">₹{product.price}</span>
+            <span className="text-gray-400 line-through text-sm ml-2">
+              ₹122
+            </span>
           </div>
 
-          <div className="flex flex-col items-end gap-2">
-            <div className="flex items-center gap-2">
-              <select value={qty} onChange={(e) => setQty(e.target.value)} className="text-xs border rounded px-3 py-1 w-24 bg-white">
-                {product.sizes ? product.sizes.map(s => <option key={s} value={s}>{s}</option>) : <option value={qty}>{qty}</option>}
-              </select>
+          {qty === 0 ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setQty(1);
+
+                addToCart({
+                  id: product.id || product.productId,
+                  name: product.name || product.productName,
+                  image: image,
+                  price: product.price,
+                  oldPrice: product.mrp ?? product.price,
+                  discount: product.mrp
+                    ? Math.round((1 - product.price / product.mrp) * 100)
+                    : 0,
+                  shopId: product.shopId,
+                });
+
+                showToast("Added to cart", "success");
+              }}
+              className="bg-[#68911a] text-white px-3 py-1 rounded-md flex items-center gap-1 text-sm"
+            >
+              <ShoppingCart size={14} />
+              Add
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 bg-[#68911a] text-white px-2 py-1 rounded-md">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (qty > 0) {
+                    setQty(qty - 1);
+                  }
+                  onQtyChange(-1);
+                }}
+                className="px-2"
+              >
+                -
+              </button>
+
+              <span className="text-sm font-semibold">{qty}</span>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQty(qty + 1);
+
+                  addToCart({
+                    id: product.id || product.productId,
+                    name: product.name || product.productName,
+                    image: image,
+                    price: product.price,
+                    oldPrice: product.mrp ?? product.price,
+                    discount: product.mrp
+                      ? Math.round((1 - product.price / product.mrp) * 100)
+                      : 0,
+                    shopId: product.shopId,
+                  });
+
+                  showToast("Added to cart", "success");
+                }}
+                className="px-2"
+              >
+                +
+              </button>
             </div>
-            <button onClick={() => onAdd(product)} className="w-24 text-sm px-3 py-1 rounded-full grad-primary text-white font-semibold hover:shadow-xl active:scale-95 transition-transform">ADD</button>
-          </div>
+          )}
         </div>
       </div>
-
-      <ProductModal open={open} product={product} onClose={() => setOpen(false)} onAdd={onAdd} />
-    </motion.div>
-  )
+    </div>
+  );
 }

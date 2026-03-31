@@ -6,7 +6,7 @@ module.exports = {
         'brand-green': '#00A86B',
         'brand-yellow': '#F59E0B',
         'brand-orange': '#FB923C',
-        'brand-purple': '#7C3AED',
+        'brand-purple': '#1cbb93',
       },
       fontFamily: {
         sans: ['Poppins', 'Inter', 'ui-sans-serif', 'system-ui'],

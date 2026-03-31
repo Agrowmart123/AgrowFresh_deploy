@@ -1,75 +1,96 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState } from "react";
 
-const CartContext = createContext()
+const CartContext = createContext();
 
-export function useCart() {
-  return useContext(CartContext)
+export const useCart = () => useContext(CartContext);
+
+function loadFromStorage(key, fallback) {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
-export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([])
-  const [shopId, setShopId] = useState(null)
-  const [showConflictModal, setShowConflictModal] = useState(false)
-  const [pendingItem, setPendingItem] = useState(null)
+export const CartProvider = ({ children }) => {
+  const [cartItems, setCartItems] = useState(() =>
+    loadFromStorage("agrowfresh_cart", [])
+  );
+  const [orders, setOrders] = useState(() =>
+    loadFromStorage("agrowfresh_orders", [])
+  );
 
-  function addToCart(item) {
-    // item must include shopId
-    if (shopId && item.shopId !== shopId) {
-      setPendingItem(item)
-      setShowConflictModal(true)
-      return false
-    }
-
-    setShopId(item.shopId)
-    setCartItems(prev => {
-      const existing = prev.find(ci => ci.id === item.id)
-      if (existing) {
-        return prev.map(ci => ci.id === item.id ? { ...ci, quantity: ci.quantity + (item.quantity || 1) } : ci)
+  const addToCart = (product) => {
+    setCartItems((prev) => {
+      const exist = prev.find((item) => item.id === product.id);
+      let updated;
+      if (exist) {
+        updated = prev.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        updated = [...prev, { ...product, quantity: 1 }];
       }
-      return [...prev, { ...item, quantity: item.quantity || 1 }]
-    })
-    return true
-  }
+      localStorage.setItem("agrowfresh_cart", JSON.stringify(updated));
+      return updated;
+    });
+  };
 
-  function removeFromCart(productId) {
-    setCartItems(prev => {
-      const next = prev.filter(p => p.id !== productId)
-      if (next.length === 0) setShopId(null)
-      return next
-    })
-  }
+  const removeFromCart = (id) => {
+    setCartItems((prev) => {
+      const updated = prev.filter((item) => item.id !== id);
+      localStorage.setItem("agrowfresh_cart", JSON.stringify(updated));
+      return updated;
+    });
+  };
 
-  function clearCart() {
-    setCartItems([])
-    setShopId(null)
-    setPendingItem(null)
-    setShowConflictModal(false)
-  }
+  const updateQuantity = (id, quantity) => {
+    if (quantity < 1) return;
+    setCartItems((prev) => {
+      const updated = prev.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      );
+      localStorage.setItem("agrowfresh_cart", JSON.stringify(updated));
+      return updated;
+    });
+  };
 
-  function confirmClearAndAdd() {
-    if (!pendingItem) return
-    clearCart()
-    addToCart(pendingItem)
-    setPendingItem(null)
-    setShowConflictModal(false)
-  }
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem("agrowfresh_cart");
+  };
 
-  function updateQuantity(productId, quantity) {
-    setCartItems(prev => prev.map(p => p.id === productId ? { ...p, quantity } : p))
-  }
+  const placeOrder = () => {
+    if (cartItems.length === 0) return null;
+    const orderId = `ORD-${Date.now()}`;
+    const total = cartItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    const newOrder = {
+      id: orderId,
+      date: new Date().toISOString(),
+      status: "Processing",
+      cartItems,
+      total,
+    };
+    setOrders((prev) => {
+      const updated = [newOrder, ...prev];
+      localStorage.setItem("agrowfresh_orders", JSON.stringify(updated));
+      return updated;
+    });
+    clearCart();
+    return orderId;
+  };
 
-  const value = {
-    cartItems,
-    shopId,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    updateQuantity,
-    showConflictModal,
-    setShowConflictModal,
-    confirmClearAndAdd,
-    pendingItem,
-  }
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
-}
+  return (
+    <CartContext.Provider
+      value={{ cartItems, addToCart, removeFromCart, updateQuantity, orders, placeOrder, clearCart }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
+};
