@@ -1,38 +1,67 @@
-import React from 'react'
-import { getOrders } from '../services/api'
+import React, { useEffect, useState } from "react";
+import OrderCard from "../pages/OrderCard";
+import { getAllOrders } from "../services/ordersApi";
 
-export default function Orders(){
-  const orders = getOrders()
+export default function Orders() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setOrders(getAllOrders);
+      setLoading(false);
+    }, 700);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="w-9 h-9 rounded-full border-4 border-green-100 border-t-[#68911a] animate-spin" />
+        <p className="text-sm text-gray-400">Loading your orders...</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <main className="max-w-4xl mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Your Orders</h1>
-        {orders.length === 0 ? (
-          <div className="text-gray-600">No orders yet.</div>
-        ) : (
-          <div className="space-y-4">
-            {orders.map(o => (
-              <div key={o.id} className="bg-white rounded-2xl p-4 shadow-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold">Order {o.id}</div>
-                    <div className="text-sm text-gray-500">{new Date(o.createdAt).toLocaleString()}</div>
-                  </div>
-                  <div className="font-bold">₹{o.total}</div>
-                </div>
-                <div className="mt-2 text-sm">
-                  {o.items.map(it => (
-                    <div key={it.id} className="flex items-center justify-between py-1">
-                      <div>{it.title} × {it.quantity}</div>
-                      <div>₹{it.price * it.quantity}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="max-w-3xl mx-auto px-4 py-8 min-h-screen">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#68911a" }}>
+          My Orders
+        </h1>
+        {orders.length > 0 && (
+          <span
+            className="text-xs font-semibold px-2.5 py-1 rounded-full"
+            style={{ background: "#f0f7e6", color: "#68911a" }}
+          >
+            {orders.length} orders
+          </span>
         )}
-      </main>
+      </div>
+
+      {/* Empty State */}
+      {orders.length === 0 ? (
+        <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4 text-center px-4">
+           <div style={{ width: 200 }}>
+             <Lottie animationData={empty} loop={true} />
+           </div>
+           <p className="text-lg font-semibold text-gray-500">
+             Your orders will appear here once you shop
+           </p>
+           <button
+            onClick={() => navigate("/")}
+            className="px-6 py-2.5 rounded-full bg-[#68911a] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+          >
+            Start Shopping
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {orders.map((order) => (
+            <OrderCard key={order.id} order={order} />
+          ))}
+        </div>
+      )}
     </div>
-  )
+  );
 }

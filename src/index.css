@@ -42,7 +42,7 @@ h3{font-size:1.15rem}
 .btn-accent{background:var(--color-orange);color:var(--color-white)}
 
 /* Purple → Orange gradient for primary actions */
-.grad-primary { background: linear-gradient(90deg,#6C2BD9 0%, #F97316 100%); }
+.grad-primary { background: linear-gradient(90deg,#68911a 0%, #efad23 100%); }
 .btn-grad { @apply rounded-full text-white; }
 
 /* Nav link underline animation */
@@ -79,3 +79,47 @@ h3{font-size:1.15rem}
 /* Hide scrollbar for horizontal scrollers used in highlight lists */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Hide browser default password toggle */
+.hide-password-toggle::-ms-reveal,
+.hide-password-toggle::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-ms-reveal {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.4s ease forwards;
+}
+
+@keyframes progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.animate-progress {
+  animation: progress linear forwards;
+  animation-duration: 3s; /* same as toast duration */
+}

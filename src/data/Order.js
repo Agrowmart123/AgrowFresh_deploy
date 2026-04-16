@@ -1,0 +1,105 @@
+export const DUMMY_ORDERS = [
+  {
+    id: "ORD1234",
+    createdAt: "2026-03-03T10:30:00",
+    deliveryDate: "2026-03-07",
+    status: "Delivered",
+    totalAmount: 240,
+    items: [
+      { id: 1, productName: "Alphonso Mango", quantity: 2, price: 80, mrp: 100 },
+      { id: 2, productName: "Fresh Milk", quantity: 1, price: 80, mrp: 80 },
+    ],
+    bill: {
+      mrpTotal: 280,
+      itemDiscount: 40,
+      couponDiscount: 0,
+      deliveryFee: 0,
+      totalAmount: 240,
+    },
+    address: {
+      label: "Home",
+      name: "John Doe",
+      phone: "9876543210",
+      line1: "12, MG Road",
+      city: "Pune",
+      state: "Maharashtra",
+      pincode: "411001",
+    },
+  },
+  {
+    id: "ORD5678",
+    createdAt: "2026-03-02T16:20:00",
+    status: "Out for Delivery",
+    totalAmount: 150,
+    items: [
+      { id: 1, productName: "Tomatoes", quantity: 2, price: 40, mrp: 50 },
+      { id: 2, productName: "Potatoes", quantity: 3, price: 30, mrp: 30 },
+    ],
+    bill: {
+      mrpTotal: 190,
+      itemDiscount: 20,
+      couponDiscount: 0,
+      deliveryFee: 0,
+      totalAmount: 150,
+    },
+    address: {
+      label: "Work",
+      name: "John Doe",
+      phone: "9876543210",
+      line1: "5th Floor, Tech Park",
+      city: "Pune",
+      state: "Maharashtra",
+      pincode: "411057",
+    },
+  },
+  {
+    id: "ORD9101",
+    createdAt: "2026-03-01T12:10:00",
+    status: "Preparing",
+    totalAmount: 320,
+    items: [
+      { id: 1, productName: "Organic Honey", quantity: 1, price: 200, mrp: 250 },
+      { id: 2, productName: "Farm Eggs", quantity: 1, price: 120, mrp: 120 },
+    ],
+    bill: {
+      mrpTotal: 370,
+      itemDiscount: 50,
+      couponDiscount: 0,
+      deliveryFee: 0,
+      totalAmount: 320,
+    },
+    address: {
+      label: "Home",
+      name: "John Doe",
+      phone: "9876543210",
+      line1: "12, MG Road",
+      city: "Pune",
+      state: "Maharashtra",
+      pincode: "411001",
+    },
+  },
+];
+
+export const statusConfig = {
+  Delivered: {
+    labelColor: "text-green-800",
+    bg: "bg-green-100",
+    dot: "bg-green-500",
+    bar: "bg-green-400",
+    pulse: false,
+  },
+  "Out for Delivery": {
+    labelColor: "text-amber-800",
+    bg: "bg-amber-100",
+    dot: "bg-amber-400",
+    bar: "bg-amber-400",
+    pulse: true,
+  },
+  Preparing: {
+    labelColor: "text-purple-800",
+    bg: "bg-purple-100",
+    dot: "bg-purple-400",
+    bar: "bg-purple-400",
+    pulse: true,
+  },
+};

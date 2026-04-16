@@ -1,75 +1,97 @@
-import React, { createContext, useContext, useState } from 'react'
 
-const CartContext = createContext()
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getCart, updateCartItem, removeCartItem, addToCart as addToCartApi } from "../services/api";
 
-export function useCart() {
-  return useContext(CartContext)
-}
+const CartContext = createContext();
 
-export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([])
-  const [shopId, setShopId] = useState(null)
-  const [showConflictModal, setShowConflictModal] = useState(false)
-  const [pendingItem, setPendingItem] = useState(null)
+export const useCart = () => useContext(CartContext);
 
-  function addToCart(item) {
-    // item must include shopId
-    if (shopId && item.shopId !== shopId) {
-      setPendingItem(item)
-      setShowConflictModal(true)
-      return false
+export const CartProvider = ({ children }) => {
+  const [cartItems, setCartItems] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [totalPayable, setTotalPayable] = useState(0);
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const fetchCart = async () => {
+    try {
+      const res = await getCart();
+      const data = res?.data || {};
+
+      setCartItems(data.items || []);
+      setSubtotal(Number(data.subtotal) || 0);
+      setTotalPayable(Number(data.totalPayable) || 0);
+
+      console.log("✅ Cart Updated from Backend:", data);
+    } catch (e) {
+      console.error("❌ Fetch cart failed:", e);
     }
+  };
 
-    setShopId(item.shopId)
-    setCartItems(prev => {
-      const existing = prev.find(ci => ci.id === item.id)
-      if (existing) {
-        return prev.map(ci => ci.id === item.id ? { ...ci, quantity: ci.quantity + (item.quantity || 1) } : ci)
-      }
-      return [...prev, { ...item, quantity: item.quantity || 1 }]
-    })
-    return true
+  // ==================== ADD TO CART ====================
+const addToCart = async (product) => {
+  try {
+    await addToCartApi({ 
+      productId: product.productId,
+       productType: product.productType || "REGULAR",    // ✅ FIX
+      quantity: product.quantity || 1,
+     getMerchantId: product.shopId,           // ✅ ADD THIS
+    });
+
+    await fetchCart(); // ✅ REMOVE setTimeout
+  } catch (err) {
+    console.error("Add to cart failed:", err);
   }
+};
 
-  function removeFromCart(productId) {
-    setCartItems(prev => {
-      const next = prev.filter(p => p.id !== productId)
-      if (next.length === 0) setShopId(null)
-      return next
-    })
+  // ==================== UPDATE QUANTITY (Fixed) ====================
+ const updateQuantity = async (id, quantity) => {
+  if (quantity < 1) return;
+
+  try {
+    await updateCartItem({ 
+      itemId: id,   // ✅ correct
+      quantity: quantity 
+    });
+
+    await fetchCart(); // ✅ instant refresh
+  } catch (err) {
+    console.error("Update quantity failed:", err);
   }
+};
 
-  function clearCart() {
-    setCartItems([])
-    setShopId(null)
-    setPendingItem(null)
-    setShowConflictModal(false)
+  // ==================== REMOVE FROM CART ====================
+  const removeFromCart = async (id) => {
+  try {
+    await removeCartItem(id);
+    await fetchCart(); // ✅
+  } catch (err) {
+    console.error("Remove from cart failed:", err);
   }
+};
 
-  function confirmClearAndAdd() {
-    if (!pendingItem) return
-    clearCart()
-    addToCart(pendingItem)
-    setPendingItem(null)
-    setShowConflictModal(false)
-  }
+  const clearCart = () => {
+    setCartItems([]);
+    setSubtotal(0);
+    setTotalPayable(0);
+  };
 
-  function updateQuantity(productId, quantity) {
-    setCartItems(prev => prev.map(p => p.id === productId ? { ...p, quantity } : p))
-  }
-
-  const value = {
-    cartItems,
-    shopId,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    updateQuantity,
-    showConflictModal,
-    setShowConflictModal,
-    confirmClearAndAdd,
-    pendingItem,
-  }
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
-}
+  return (
+    <CartContext.Provider
+      value={{
+        cartItems,
+        subtotal,
+        totalPayable,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        fetchCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
+};
